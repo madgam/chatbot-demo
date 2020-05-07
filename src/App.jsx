@@ -16,6 +16,9 @@ export default class App extends React.Component {
     this.selectAnswer = this.selectAnswer.bind(this);
   }
 
+  /**
+   * 次の質問を表示する
+   */
   displayNextQuestion = (nextQuestionId) => {
     const chats = this.state.chats;
     chats.push({
@@ -30,11 +33,24 @@ export default class App extends React.Component {
     });
   };
 
+  /**
+   * 回答を選択する
+   * 子コンポーネントでも実行する
+   */
   selectAnswer = (seletedAnswer, nextQuestionId) => {
     switch (true) {
+      // 初期表示
       case nextQuestionId === 'init':
-        this.displayNextQuestion(nextQuestionId);
+        setTimeout(() => this.displayNextQuestion(nextQuestionId), 500);
         break;
+      // 外部リンク
+      case /^https:*/.test(nextQuestionId):
+        const a = document.createElement('a');
+        a.href = nextQuestionId;
+        a.target = '_brank';
+        a.click();
+        break;
+      // 初期表示以降のアクション
       default:
         const chats = this.state.chats;
         chats.push({
@@ -43,14 +59,27 @@ export default class App extends React.Component {
         });
 
         this.setState({ chats: chats });
-        this.displayNextQuestion(nextQuestionId);
+        setTimeout(() => this.displayNextQuestion(nextQuestionId), 500);
         break;
     }
   };
 
+  /**
+   * マウント時に実行されるライフサイクル
+   */
   componentDidMount() {
     const initAnswer = '';
     this.selectAnswer(initAnswer, this.state.currentId);
+  }
+
+  /**
+   * 更新時に実行されるライフサイクル
+   */
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    const scrollArea = document.getElementById('scroll-area');
+    if (scrollArea) {
+      scrollArea.scrollTop = scrollArea.scrollHeight;
+    }
   }
 
   render() {
