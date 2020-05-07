@@ -2,6 +2,7 @@ import React from 'react';
 import defaultDataset from './dataset';
 import './assets/styles/styles.css';
 import { AnswersList, Chats } from './components/index';
+import { FormDialog } from './components/Forms/index';
 
 export default class App extends React.Component {
   constructor(props) {
@@ -13,7 +14,10 @@ export default class App extends React.Component {
       dataset: defaultDataset,
       open: false,
     };
+
     this.selectAnswer = this.selectAnswer.bind(this);
+    this.handleClickOpen = this.handleClickOpen.bind(this);
+    this.handleClose = this.handleClose.bind(this);
   }
 
   /**
@@ -43,6 +47,9 @@ export default class App extends React.Component {
       case nextQuestionId === 'init':
         setTimeout(() => this.displayNextQuestion(nextQuestionId), 500);
         break;
+      case nextQuestionId === 'contact':
+        this.handleClickOpen();
+        break;
       // 外部リンク
       case /^https:*/.test(nextQuestionId):
         const a = document.createElement('a');
@@ -62,6 +69,20 @@ export default class App extends React.Component {
         setTimeout(() => this.displayNextQuestion(nextQuestionId), 500);
         break;
     }
+  };
+
+  /**
+   * モーダル画面を表示する
+   */
+  handleClickOpen = () => {
+    this.setState({ open: true });
+  };
+
+  /**
+   * モーダル画面を非表示にする
+   */
+  handleClose = () => {
+    this.setState({ open: false });
   };
 
   /**
@@ -91,6 +112,7 @@ export default class App extends React.Component {
             answers={this.state.answers}
             select={this.selectAnswer}
           />
+          <FormDialog open={this.state.open} handleClose={this.handleClose} />
         </div>
       </section>
     );
